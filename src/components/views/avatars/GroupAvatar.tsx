@@ -15,7 +15,6 @@ limitations under the License.
 */
 
 import React from 'react';
-import {MatrixClientPeg} from '../../../MatrixClientPeg';
 import BaseAvatar from './BaseAvatar';
 import {mediaFromMxc} from "../../../customisations/Media";
 import {ResizeMode} from "../../../customisations/models/ResizeMode";
