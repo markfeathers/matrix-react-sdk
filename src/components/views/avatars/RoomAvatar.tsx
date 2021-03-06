@@ -15,7 +15,6 @@ limitations under the License.
 */
 import React, {ComponentProps} from 'react';
 import Room from 'matrix-js-sdk/src/models/room';
-import {getHttpUriForMxc} from 'matrix-js-sdk/src/content-repo';
 
 import BaseAvatar from './BaseAvatar';
 import ImageView from '../elements/ImageView';
@@ -23,6 +22,7 @@ import {MatrixClientPeg} from '../../../MatrixClientPeg';
 import Modal from '../../../Modal';
 import * as Avatar from '../../../Avatar';
 import {ResizeMethod} from "../../../Avatar";
+import {mediaFromMxc} from "../../../customisations/Media";
 
 interface IProps extends Omit<ComponentProps<typeof BaseAvatar>, "name" | "idName" | "url" | "onClick"> {
     // Room may be left unset here, but if it is,
@@ -88,16 +88,16 @@ export default class RoomAvatar extends React.Component<IProps, IState> {
     };
 
     private static getImageUrls(props: IProps): string[] {
-        return [
-            getHttpUriForMxc(
-                MatrixClientPeg.get().getHomeserverUrl(),
-                // Default props don't play nicely with getDerivedStateFromProps
-                //props.oobData !== undefined ? props.oobData.avatarUrl : {},
-                props.oobData.avatarUrl,
+        let oobAvatar = null;
+        if (props.oobData.avatarUrl) {
+            oobAvatar = mediaFromMxc(props.oobData.avatarUrl).getThumbnailOfSourceHttp(
                 Math.floor(props.width * window.devicePixelRatio),
                 Math.floor(props.height * window.devicePixelRatio),
                 props.resizeMethod,
-            ), // highest priority
+            );
+        }
+        return [
+            oobAvatar, // highest priority
             RoomAvatar.getRoomAvatarUrl(props),
         ].filter(function(url) {
             return (url !== null && url !== "");
